@@ -30,9 +30,13 @@ def resize_image(image, plot = False):
     image = cv2.resize(crop_image, (200, 66), interpolation=cv2.INTER_AREA)
     return image
 
+def color_transform(image):
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2YUV)
+    return image
+
 def get_image(path, plot = False):
     image = cv2.imread(path)
-    image = cv2.cvtColor(image, cv2.COLOR_RGB2YUV)
+    image = color_transform(image)
     image = normalize_image(image)
     image = resize_image(image)
     if plot == True:
@@ -74,56 +78,56 @@ def create_batch(data, batch_size):
             steering_batch[i] = y
         yield image_batch, steering_batch
 
-model = Sequential()
+if __name__ == '__main__':
 
-model.add(Conv2D(24, 5, 5, input_shape=(66, 200, 3)))
-model.add(MaxPooling2D((2,2)))
-model.add((Dropout(0.5)))
-model.add(Activation('relu'))
+    model = Sequential()
 
-model.add(Conv2D(36, 5, 5))
-model.add(MaxPooling2D((2,2)))
-model.add((Dropout(0.5)))
-model.add(Activation('relu'))
+    model.add(Conv2D(24, 5, 5, input_shape=(66, 200, 3)))
+    model.add(MaxPooling2D((2,2)))
+    model.add((Dropout(0.5)))
+    model.add(Activation('relu'))
 
-model.add(Conv2D(48, 5, 5))
-model.add(MaxPooling2D((2,2), border_mode='same'))
-model.add((Dropout(0.5)))
-model.add(Activation('relu'))
+    model.add(Conv2D(36, 5, 5))
+    model.add(MaxPooling2D((2,2)))
+    model.add((Dropout(0.5)))
+    model.add(Activation('relu'))
 
-model.add(Conv2D(64, 3, 3))
-model.add((Dropout(0.5)))
-model.add(Activation('relu'))
+    model.add(Conv2D(48, 5, 5))
+    model.add(MaxPooling2D((2,2), border_mode='same'))
+    model.add((Dropout(0.5)))
+    model.add(Activation('relu'))
 
-model.add(Conv2D(64, 3, 3))
-model.add((Dropout(0.5)))
-model.add(Activation('relu'))
+    model.add(Conv2D(64, 3, 3))
+    model.add((Dropout(0.5)))
+    model.add(Activation('relu'))
 
-model.add(Flatten())
+    model.add(Conv2D(64, 3, 3))
+    model.add((Dropout(0.5)))
+    model.add(Activation('relu'))
 
-model.add(Dense(1164, activation='relu'))
-model.add((Dropout(0.5)))
+    model.add(Flatten())
 
-model.add(Dense(100, activation='relu'))
+    model.add(Dense(1164, activation='relu'))
+    model.add((Dropout(0.5)))
 
-model.add(Dense(50, activation='relu'))
+    model.add(Dense(100, activation='relu'))
 
-model.add(Dense(10, activation='relu'))
+    model.add(Dense(50, activation='relu'))
 
-model.add(Dense(1))
+    model.add(Dense(10, activation='relu'))
 
-gen = create_batch(data, batch_size)
-val = create_batch(data, batch_size)
+    model.add(Dense(1))
 
-print (len(data))
+    gen = create_batch(data, batch_size)
+    val = create_batch(data, batch_size)
 
-model.compile(loss='mse', optimizer=Adam(lr=0.0001),metrics=['mean_squared_error'])
-history = model.fit_generator(create_batch(data, batch_size), samples_per_epoch=20032,
-                              nb_epoch=8,validation_data=val, nb_val_samples=6400, verbose=2)
+    model.compile(loss='mse', optimizer=Adam(lr=0.0001),metrics=['mean_squared_error'])
+    history = model.fit_generator(create_batch(data, batch_size), samples_per_epoch=20032,
+                                  nb_epoch=8,validation_data=val, nb_val_samples=6400, verbose=2)
 
-model.save(filepath='model.h5')
-model_json = model.to_json()
+    model.save(filepath='model.h5')
+    model_json = model.to_json()
 
-with open('model.json', 'w') as f:
-    json.dump(model_json, f)
-print("Saved model to filename="+'model.h5'+ ", and model_arch="+'model.json')
+    with open('model.json', 'w') as f:
+        json.dump(model_json, f)
+    print("Saved model to filename="+'model.h5'+ ", and model_arch="+'model.json')
