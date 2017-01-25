@@ -18,8 +18,6 @@ from keras.optimizers import Adam
 from keras.models import Sequential, model_from_json
 import json
 
-data = pd.read_csv("driving_log.csv")
-
 def normalize_image(image):
     image = image / 255
     image -= 0.5
@@ -43,13 +41,6 @@ def get_image(path, plot = False):
         plt.imshow(image)
         plt.show()
     return image
-
-batch_size = 64
-steering_batch = np.zeros(batch_size)
-image_batch = np.zeros((batch_size, 66, 200, 3))
-
-# shuffle dataframe
-data = data.sample(frac=1)
 
 def preprocess(i, data):
     index = randint(0, len(data) - 1)
@@ -79,6 +70,14 @@ def create_batch(data, batch_size):
         yield image_batch, steering_batch
 
 if __name__ == '__main__':
+    data = pd.read_csv("driving_log.csv")
+
+    batch_size = 64
+    steering_batch = np.zeros(batch_size)
+    image_batch = np.zeros((batch_size, 66, 200, 3))
+
+    # shuffle dataframe
+    data = data.sample(frac=1)
 
     model = Sequential()
 
