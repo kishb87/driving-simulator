@@ -34,8 +34,8 @@ def color_transform(image):
 
 def get_image(path, steer, plot = False):
     image = cv2.imread(path)
-    image = random_brightness(image)
-    image = random_shadow(image)
+    # image = random_brightness(image)
+    # image = random_shadow(image)
     image = color_transform(image)
     image = normalize_image(image)
     image = resize_image(image)
@@ -107,7 +107,7 @@ def create_batch_training(data, batch_size):
             run = 0
             while run == 0:
                 x,y = preprocess(i, data)
-                if abs(y) < 0.15:
+                if abs(y) < 0.1:
                     steer_val = np.random.uniform()
                     if steer_val > steering_threshold:
                         run = 1
@@ -179,10 +179,11 @@ if __name__ == '__main__':
     steering_threshold = 1
 
     for i in range(8):
-        val = create_batch_valid(data, batch_size)
-        model.compile(loss='mse', optimizer=Adam(lr=0.0001),metrics=['mean_squared_error'])
-        history = model.fit_generator(create_batch_training(data, batch_size), samples_per_epoch=20032,
-                                      nb_epoch=1,validation_data=val, nb_val_samples=6400, verbose=1)
+        for x in range(2):
+            val = create_batch_valid(data, batch_size)
+            model.compile(loss='mse', optimizer=Adam(lr=0.0001),metrics=['mean_squared_error'])
+            history = model.fit_generator(create_batch_training(data, batch_size), samples_per_epoch=20032,
+                                          nb_epoch=1,validation_data=val, nb_val_samples=6400, verbose=1)
         steering_threshold = 1/(i+1)
 
     save_model()
