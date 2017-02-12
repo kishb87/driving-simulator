@@ -6,3 +6,7 @@ For this project, I was able to create a neural network that can steer a car wit
 
 NVIDIA ConvNet Architechture for Steering Angle Prediction:  
 ![alt text](arch.png "NVIDIA Architechture")
+
+
+### Training
+An Ubuntu 16.04 machine with an Intel i5 processor and a Nvidia GTX 1070 GPU was used to train the network. Before the network could be trained, the images had to be preprocessed. The training images were resized, normalized, and transformed to YUV from RGB. In addition brightness, shadows were added at random to images. Images were also flipped at random. The purpose of these functions was to augment the data and thus provide the neural network with robust training examples to help it generalize. The functions were provided by [Vivek Yadev's post on data augmentation](https://chatbotslife.com/using-augmentation-to-mimic-human-driving-496b569760a9#.hlx538tr0). 
