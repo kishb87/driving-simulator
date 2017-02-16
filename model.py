@@ -18,16 +18,19 @@ from keras.optimizers import Adam
 from keras.models import Sequential, model_from_json
 import json
 
+# images must be normalized for the network
 def normalize_image(image):
     image = image / 255
     image -= 0.5
     return image
 
+# resize and crop images to remove background
 def resize_image(image, plot = False):
     crop_image = image[50:150, :]
     image = cv2.resize(crop_image, (200, 66), interpolation=cv2.INTER_AREA)
     return image
 
+# convert images to YUV format
 def color_transform(image):
     image = cv2.cvtColor(image, cv2.COLOR_RGB2YUV)
     return image
@@ -44,6 +47,8 @@ def get_image(path, steer, plot = False):
         plt.show()
     return image
 
+# flipt at random the images in order to improve generalization
+# source: https://chatbotslife.com/using-augmentation-to-mimic-human-driving-496b569760a9#.c2hkt5pnx
 def random_flip(image,steering):
     coin=np.random.randint(0,2)
     if coin==0:
@@ -55,6 +60,7 @@ def preprocess(i, data):
     loc = np.random.randint(3)
     path = None
     shift_ang = None
+    # pick at random center, left or right images
     if (loc == 0 ):
         path = data.ix[index][0]
         shift_ang = 0
@@ -81,6 +87,7 @@ def create_batch_training(data, batch_size):
                         run = 1
                 else:
                     run = 1
+            # flip image at random
             x,y = random_flip(x,y)
             image_batch[i] = x
             steering_batch[i] = y
@@ -113,6 +120,7 @@ if __name__ == '__main__':
 
     model = Sequential()
 
+    # NVIDIA Architechture
     model.add(Conv2D(24, 5, 5, input_shape=(66, 200, 3)))
     model.add(MaxPooling2D((2,2)))
     model.add((Dropout(0.5)))
@@ -145,7 +153,10 @@ if __name__ == '__main__':
     model.add(Dense(1))
 
     steering_threshold = 1
-
+    
+    # train in total with 16 epochs
+    # every two epochs changes the number of large steering angles in training batch
+    # this ensures that examples with large steering angles are well represented in training
     for i in range(8):
         for x in range(2):
             val = create_batch_valid(data, batch_size)
