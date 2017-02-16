@@ -13,7 +13,7 @@ An Ubuntu 16.04 machine with an Intel i5 processor and a Nvidia GTX 1070 GPU was
 
 For a validation set, 10% of the data was held out. This data was preprocessed with resizing, normalizing and transforming just like in training. However, none of the data augmentation was performed. It is interesting to note that the validation error was slightly less than the the training error. This could be because of the lack of data augmentation in the validation set as well as the dropout layers used to reduce overfitting in the network architechture. Lastly, the Adam optimizer was used for training with a learning rate of 1e-4. 
 
-![alt text](img/YUV.png "Image in YUV")
+![alt text](img/YUV.png "Image in YUV")  
 Image in YUV
 
 ![alt text](img/normalized.png "Image Normalized")
