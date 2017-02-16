@@ -16,10 +16,10 @@ For a validation set, 10% of the data was held out. This data was preprocessed w
 ![alt text](img/YUV.png "Image in YUV")  
 Image in YUV
 
-![alt text](img/normalized.png "Image Normalized")
+![alt text](img/normalized.png "Image Normalized")  
 Image Normalized
 
-![alt text](img/resized.png "Image Resized")
+![alt text](img/resized.png "Image Resized")  
 Image Resized
 
 ### Results
